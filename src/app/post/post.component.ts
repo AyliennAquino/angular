@@ -53,6 +53,17 @@ import { PostService } from './post.service';
 @Component({
   selector: 'my-app',
   template: `
+    <div style="color:red;">{{ errorMsg }}</div>
+
+    <input type="text" id="search" name="search" (keyup)="onKeyup($event)">
+    <button (click)="search()">Search</button>
+
+    <div *ngIf="searchPost">
+      <label>{{ searchPost.title }}</label>
+    </div>
+    
+    <br>
+
     <ul>
       <li *ngFor="let post of posts" (click)="selectPost(post)">{{ post.title }}</li>
     </ul>
@@ -91,6 +102,10 @@ export class PostComponent implements OnInit {
   selectedPost: Post;
   contact: Contact;
   //myForm: FormGroup;
+  searchText: number;
+  searchPost: Post;
+
+  errorMsg:string;
 
   constructor(private postService: PostService) {
     console.log('constructor');
@@ -123,7 +138,17 @@ export class PostComponent implements OnInit {
 
   selectPost(post: Post) {
       this.selectedPost = post;
-      console.log(this.selectedPost.id);
+  }
+
+  onKeyup(event:any) {
+    this.searchText = event.target.value;
+    console.log(this.searchText);
+  }
+
+  search() {
+    this.postService.getPost(this.searchText)
+        .subscribe(searchPost => this.searchPost = searchPost/*,
+                   errorMsg => this.errorMsg = errorMsg*/);
   }
 }
 
